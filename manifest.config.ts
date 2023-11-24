@@ -9,7 +9,7 @@ const [major, minor, patch, label = "0"] = version
   // split into version parts
   .split(/[.-]/);
 
-export default defineManifest(async (env) => ({
+export default defineManifest(async () => ({
   manifest_version: 3,
   name,
   // up to four numbers separated by dots
@@ -19,4 +19,9 @@ export default defineManifest(async (env) => ({
   action: {
     default_popup: "index.html",
   },
+  background: {
+    service_worker: "src/background.ts",
+    type: "module",
+  },
+  permissions: ["contextMenus"],
 }));
