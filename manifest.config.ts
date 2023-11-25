@@ -23,5 +23,5 @@ export default defineManifest(async () => ({
     service_worker: "src/background.ts",
     type: "module",
   },
-  permissions: ["contextMenus"],
+  permissions: ["contextMenus", "storage"],
 }));
