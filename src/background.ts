@@ -1,4 +1,5 @@
 const MENU_ITEM_ID = "fast-norikae";
+const STORAGE_KEY = "nearest_station";
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
@@ -10,11 +11,21 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (tab && tab.id && info.menuItemId === MENU_ITEM_ID && info.selectionText) {
-    const url = new URL("https://transit.yahoo.co.jp/search/result");
-    url.searchParams.set("from", info.selectionText);
-    url.searchParams.set("to", "東京");
-    chrome.tabs.create({
-      url: url.toString(),
+    const selectionText = info.selectionText;
+    chrome.storage.sync.get([STORAGE_KEY], (result) => {
+      const nearestStation = result[STORAGE_KEY];
+      const url = new URL("https://transit.yahoo.co.jp/search/result");
+      url.searchParams.set("from", nearestStation);
+      url.searchParams.set("to", selectionText);
+      chrome.tabs.create({
+        url: url.toString(),
+      });
     });
+  }
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === "save") {
+    chrome.storage.sync.set({ [STORAGE_KEY]: message.data.nearestStation });
   }
 });
